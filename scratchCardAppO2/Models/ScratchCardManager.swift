@@ -7,6 +7,7 @@
 
 //MARK: - Imports
 import Foundation
+import NotificationBannerSwift
 
 struct APIO2: Codable {
   let ios, iosTM, iosRA, iosRA2: String
@@ -47,14 +48,14 @@ class ScratchCardManager: ObservableObject {
         } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
           if let data = data {
             let version = self.parse(data: data)
-            if(version.compare("6.1", options: .numeric) == .orderedDescending) {
+            if (Double(version.replacingOccurrences(of: ",", with: ".")) ?? 0.0) > 6.1 {
               DispatchQueue.main.async {
                 self.scratchCard.status = .active
                 completion(.active)
               }
             } else {
               DispatchQueue.main.async {
-                NotificationBanner.show("Sorry but version is below expected version")
+                  NotificationBanner(title: "Sorry but version is below expected version", style: .danger).show()
               }
               
             }
